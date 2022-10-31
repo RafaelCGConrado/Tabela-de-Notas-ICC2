@@ -51,3 +51,30 @@ void calcula_media(ALUNO *arr, int n_alunos, int n_notas){
 
 
 }
+
+int encontra_k(int n_alunos){
+
+    int k = 1;
+    while(k  < n_alunos){
+        k = k * 2;
+    }
+    return k;
+
+}
+
+ALUNO *cria_arvore(int k){
+
+    ALUNO *p = (ALUNO *)malloc(2 * k * sizeof(ALUNO));
+    if(p) return p;
+    return NULL;
+
+}
+
+void torneio_sort(ALUNO *arr, ALUNO *arvore, int k){
+
+    int tam_arvore = 2 * k;
+    
+    
+
+
+}
