@@ -64,17 +64,40 @@ int encontra_k(int n_alunos){
 
 ALUNO *cria_arvore(int k){
 
-    ALUNO *p = (ALUNO *)malloc(2 * k * sizeof(ALUNO));
+    ALUNO *p = (ALUNO *)calloc(2 * k, sizeof(ALUNO));
     if(p) return p;
     return NULL;
 
 }
 
-void torneio_sort(ALUNO *arr, ALUNO *arvore, int k){
+void torneio_sort(ALUNO *arr, ALUNO *arvore, int k, int n_alunos){
 
     int tam_arvore = 2 * k;
-    
+    //1a etapa: preencher as folhas!
+    //ou seja, ultimos elementos do vetor arvore
+    int pos_arvore = tam_arvore - 1;
+    for(int i = 0; i < n_alunos; i++){
+        arvore[pos_arvore] = arr[i];
+        pos_arvore--;
+    }
+    //transformar essa bagaça em funcao
+
+
+    //2o passo: dividir em pares e encontrar
+    //o maior de cada um -> pai
+    //obs criterio 1 -> media
+    //criterio 2 -> 1a nota, 2a nota .......
+
+
+
+
     
 
 
+}
+
+void printa_arvore(ALUNO *arvore, int k){
+    for(int i = 0; i < 2 * k; i++){
+        printf("%s\n", arvore[i].nome);
+    }
 }
