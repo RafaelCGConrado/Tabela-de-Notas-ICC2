@@ -35,4 +35,6 @@ int encontra_k(int n_alunos);
 ALUNO *cria_arvore(int k);
 
 //Algoritmo de ordenação TORNEIO_SORT
-void torneio_sort(ALUNO *arr, ALUNO *arvore, int k);
+void torneio_sort(ALUNO *arr, ALUNO *arvore, int k, int n_alunos);
+
+void printa_arvore(ALUNO *arvore, int k);
