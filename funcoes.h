@@ -11,30 +11,25 @@ struct alunos{
     double media;
 };
 
-//Cria vetor ALUNO da struct alunos e retorna
-ALUNO *cria_vetor();
+//Recebe os dados dos alunos e armazena nas structs
+//respectivas
+void leitura(ALUNO **alunos, int n_alunos, int n_notas);
 
-//Lê a entrada do usuário e armazena no vetor de ALUNO
-void leitura(ALUNO *arr, int n_alunos, int n_notas);
+//Calcula a média de cada aluno
+void calcula_media(ALUNO **alunos, int n_alunos, int n_notas);
 
-//printa todos os elementos do vetor ALUNO. Usado para fazer
-//testes no código
-void printa(ALUNO *arr, int n_alunos, int n_notas);
+//Printa os nomes, notas e média de cada aluno.
+//Usada para testes ao longo do código.
+void printa(ALUNO **alunos, int n_alunos, int n_notas);
 
-//Calculo a média de notas de cada aluno e armazena na struct
-//respectiva
-void calcula_media(ALUNO *arr, int n_alunos, int n_notas);
-
-
-//Encontra o K que será utilizado para alocar
-//o vetor da árvore binaria
+//Encontra o K utilizado na criação da árvore
 int encontra_k(int n_alunos);
 
-//Cria o vetor que estrutura a árvore a 
-//partir do K encontrado
-ALUNO *cria_arvore(int k);
+//Faz as comparações, desempata e retorna o "melhor" aluno
+ALUNO *compara_alunos(ALUNO *aluno1, ALUNO *aluno2, int n_notas);
 
-//Algoritmo de ordenação TORNEIO_SORT
-void torneio_sort(ALUNO *arr, ALUNO *arvore, int k, int n_alunos);
+//Constrói a árvore utilizada na ordenação
+void constroi_arvore(ALUNO **arvore, int pai, int tamanho_arvore);
 
-void printa_arvore(ALUNO *arvore, int k);
+//Algoritmo de ordenação
+void torneio_sort(ALUNO **alunos, int k, int n_alunos, int n_notas);
