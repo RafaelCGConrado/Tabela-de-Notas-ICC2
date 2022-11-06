@@ -11,6 +11,8 @@ void leitura(ALUNO **alunos, int n_alunos, int n_notas){
             for(int j = 0; j < n_notas; j++){
                 scanf("%d", &alunos[i]->notas[j]);
             }
+            //o desempate fica setado como 0 por padrão
+            //(será modificado se necessário)
             alunos[i] -> desempate = 0;
         }
 
@@ -21,7 +23,8 @@ void leitura(ALUNO **alunos, int n_alunos, int n_notas){
 
 void calcula_media(ALUNO **alunos, int n_alunos, int n_notas){
 
-    //Percorre vetor de notas, soma e divide
+    //Percorre vetor de notas, acumula as notas na variavel
+    //soma e divide pelo numero de notas
     for(int i = 0; i < n_alunos; i++){
         
         double soma = 0;
@@ -35,6 +38,17 @@ void calcula_media(ALUNO **alunos, int n_alunos, int n_notas){
 
 }
 
+double maior_media(ALUNO **alunos, int n_alunos){
+    
+    //Percorre todas as medias e compara com a maior media
+    //registrada até então. Se for maior, substituimos o valor.
+    double maior = 0;
+    for(int i = 0; i < n_alunos; i++){
+        if(alunos[i] -> media > maior) maior = alunos[i] -> media;
+    }
+    return maior;
+
+}
 
 void printa(ALUNO **alunos, int n_alunos, int n_notas){
 
@@ -61,94 +75,153 @@ int encontra_k(int n_alunos){
     while(k  < n_alunos){
         k = k * 2;
     }
-    return k;
+    return 2 * k;
 
 }
+
 
 int compara_alunos(ALUNO *aluno1, ALUNO *aluno2, int n_notas){
 
-    //RETORNA 0 -> aluno1 'melhor' do que o aluno 2
-    //retorna 1 -> aluno 2 'melhor'
+   //Retorno 1 - Primeiro Aluno vence
+   //Retorno -1 - Segundo Aluno Vence
 
 
-    //Caso 1: Médias de ambos os alunos são iguais
-    //Compararemos as outras notas até encontrarmos a maior
-    if(aluno1 -> media == aluno2 -> media && aluno1 -> media != 0 && aluno2 -> media !=0){
-        for(int i = 0; i < n_notas; i++){
-            if(aluno1 -> notas[i] > aluno2 -> notas[i]){ 
-                aluno1 -> desempate = i + 1;
-                return 0;
-            }
+    //Importante verificar os casos em que temos um ponteiro apontando
+    //para NULL
+    if(aluno1 != NULL && aluno2 == NULL) return 1;
+    if(aluno2 != NULL && aluno1 == NULL) return -1;
+
+    
+
+    if(aluno1 != NULL && aluno2 != NULL){
+        
+        //De forma geral, comparamos as médias.
+        //Se as médias forem iguais, partimos para o critério
+        //de desempate.
+        if(aluno1 -> media > aluno2 -> media) return 1;
+        else if(aluno2 -> media > aluno1 -> media) return -1;
+
+        if(aluno1 -> media == aluno2 -> media){
             
-            
-            else if(aluno2 -> notas[i] > aluno1 -> notas[i]){
-                aluno2 -> desempate = i + 1;
-                return 1;
+            for(int i = 0; i < n_notas; i++){
+                
+               //É fundamental aqui registrar se o valor da nota
+               //referente ao desempate é MAIOR do que o desempate
+               //registrado anteriormente.
+                if(aluno1 -> notas[i] > aluno2 -> notas[i]){
+                    if(i+1 > aluno1 -> desempate) aluno1 -> desempate = i+1;
+                   
+                    return 1;
+                }
+
+                if(aluno1 -> notas[i] < aluno2 -> notas[i]){
+                    if(i+1 > aluno2 -> desempate) aluno2 -> desempate = i+1;
+                    
+                    return -1;
+
+                }
+                
+
+
             }
         }
+
+
+
     }
 
-    //Caso 2 e 3: Média de um dos alunos é maior. Não há necessidade
-    //de desempate
-    if(aluno1 -> media > aluno2 -> media) return 0;
-    
-    else return 1;
 
 }
 
-void swap(ALUNO *aluno1, ALUNO *aluno2){
 
-    ALUNO aux = *aluno2;
-    *aluno2 = *aluno1;
-    *aluno1 = aux;
+void constroi_arvore(ALUNO **alunos, ALUNO **arvore, int tamanho_arvore, int n_alunos, int n_notas){
+
+    //Primeiro, setamos toda a arvore para NULL para futuras comparações
+    for(int i = 0; i < tamanho_arvore; i++) arvore[i] = NULL;
+
+    //Preenche as folhas com os alunos a serem ordenados
+    //Também adiciona um index que será útil na função de heapify
+    for(int i = 0; i < n_alunos; i++){
+        arvore[tamanho_arvore + i - n_alunos] = alunos[i];
+        arvore[tamanho_arvore + i - n_alunos]->index = tamanho_arvore + i - n_alunos;
+    }
 
 }
 
-void constroi_arvore(ALUNO **alunos, ALUNO **arvore, int tamanho_arvore, int n_alunos, int n_notas, int posicao){
+void heapify(ALUNO **arvore, ALUNO **alunos, int tamanho_arvore, int n_alunos, int n_notas, int j){
 
-    for(int i = tamanho_arvore - 1; i > 2; i++){
-        // // if(arvore[i-1] -> media == -1 && arvore[i] -> media) arvore[i/2] -> media = -1;
-    
-        // // else{
+    for(int i = tamanho_arvore - 1; i >= 2; i-=2){
+        
+
+        if(arvore[i] != NULL && arvore[i-1] != NULL){
+
+            if(arvore[i] -> media == -1 && arvore[i-1] -> media == -1) arvore[i/2] -> media = -1;
+
+            else{
+                if(compara_alunos(arvore[i], arvore[i-1], n_notas) == 1){
             
-        // //     int comp = compara_alunos(arvore[i], arvore[i-1], n_notas);
-        // //     if(comp == 0) arvore[i/2] = arvore[i];
-        // //     else if(comp == 1) arvore[i/2] = arvore[i-1];
+                    arvore[i/2] = arvore[i];
+                }
 
-        // // }
+                if(compara_alunos(arvore[i], arvore[i-1], n_notas) == -1){
 
-        // if(i < tamanho_arvore - n_alunos){
+                    arvore[i/2] = arvore[i-1];
+                }
+            }
 
-        //     arvore[i] -> media = 0;
-        //     arvore[i-1] -> media = 0;
-        // }
+        }
 
-    
+        if(arvore[i] != NULL && arvore[i-1] == NULL){
+
+            arvore[i/2] = arvore[i];
+
+        }
+
+        if(arvore[i] == NULL && arvore[i-1] != NULL){
+
+            arvore[i/2] = arvore[i-1];
+        }
+
+
     }
-
-    //Importante lembrar que desconsideramos o indice 0 da árvore
-    // alunos[posicao] = arvore[1];
-    // arvore[arvore[1] -> maior_folha] -> media = -1;
+    
+    if(arvore[1] != NULL){
+        alunos[j] = arvore[1];
+        arvore[arvore[1] -> index] -> media = -1;
+    }
 
 
 }
 
 void torneio_sort(ALUNO **arvore, ALUNO **alunos, int tamanho_arvore, int n_alunos, int n_notas){
 
-    for(int i = 0; i < n_alunos; i++){
 
-        arvore[(tamanho_arvore + i) - n_alunos] = alunos[i];
-        arvore[(tamanho_arvore + i) - n_alunos] -> maior_folha = (tamanho_arvore + i) - n_alunos;
-
+    for(int j = 0; j < n_alunos; j++){
+        heapify(arvore, alunos, tamanho_arvore, n_alunos, n_notas, j);
     }
 
+}
 
-    // //O ERRO ESTÁ AQUI!!!!!
-    //FICA TRANQUILO, VOCE VAI CONSEGUIR RESOLVER
-    //O RAFA DO FUTURO VAI ESTAR TE CHAMANDO DE IMBECIL
-    // for(int j = 0; j < n_alunos; j++){
+void printa_final(ALUNO **alunos, int n_alunos, double maior_media){
 
-    //     constroi_arvore(alunos, arvore, tamanho_arvore, n_alunos, n_notas, j);
-    // }
+    printf("Maior media: %.3lf\n", maior_media);
+    for(int i = 0; i < n_alunos; i++){
+        printf("%d. %s", i+1, alunos[i] -> nome);
+        if(i != n_alunos - 1){
 
+            if(alunos[i] -> desempate != 0){
+                printf(" - desempate: nota %d", alunos[i] -> desempate);
+            }
+
+            else{
+                printf(" - media");
+            }
+
+
+        }
+
+        printf("\n");
+    }
+
+    
 }
